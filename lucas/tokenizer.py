@@ -67,7 +67,7 @@ class BPETokenizerSimple:
 
         # Build the vocabulary with merged tokens
         for (p0, p1), new_id in self.bpe_merges.items():
-            merged_token = self.vocab[p0] + self.vocab[p1]
+            merged_token = self.vocab[p0] + self.vocab[p1]  
             self.vocab[new_id] = merged_token
             self.inverse_vocab[merged_token] = new_id
 
@@ -210,10 +210,10 @@ class BPETokenizerSimple:
         """
         # Tokenize the token into individual characters (as initial token IDs)
         token_ids = [self.inverse_vocab.get(char, None) for char in token]
+        
         if None in token_ids:
-            missing_chars = [char for char, tid in zip(token, token_ids) if tid is None]
-            raise ValueError(f"Characters not found in vocab: {missing_chars}")
-
+            id_desconhecido = self.inverse_vocab.get("?", 0) # Pega o ID de '?' ou 0 como fallback
+            token_ids = [tid if tid is not None else id_desconhecido for tid in token_ids]
         # If we haven't loaded OpenAI's GPT-2 merges, use my approach
         if not self.bpe_ranks:
             can_merge = True
